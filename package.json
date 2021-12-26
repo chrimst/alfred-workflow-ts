@@ -1,0 +1,28 @@
+{
+  "name": "awf",
+  "version": "1.0.0",
+  "description": "alfred workflow",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "alfred"
+  ],
+  "author": "christmc",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^17.0.4",
+    "@types/sqlite3": "^3.1.8",
+    "@types/tough-cookie": "^4.0.1",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "sqlite3": "^4.2.0",
+    "axios": "^0.24.0",
+    "int": "^0.2.0",
+    "keytar": "^7.7.0",
+    "tldjs": "^2.3.1",
+    "tough-cookie": "^4.0.0"
+  }
+}
