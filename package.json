@@ -18,10 +18,11 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "sqlite3": "^4.2.0",
     "axios": "^0.24.0",
     "int": "^0.2.0",
     "keytar": "^7.7.0",
+    "log4js": "^6.3.0",
+    "sqlite3": "^4.2.0",
     "tldjs": "^2.3.1",
     "tough-cookie": "^4.0.0"
   }
