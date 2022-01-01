@@ -2,7 +2,7 @@ import * as keytar from "keytar"
 import * as crypto from "crypto"
 import * as url from "url";
 import {Url} from "url";
-import {AwfSqlite3} from "./awf_sqlite3";
+import {AwfSqlite3} from "../awf_sqlite3";
 import * as tough from 'tough-cookie'
 
 const PROFILE = "Default"
@@ -12,7 +12,6 @@ const CHROME_SALT_TYPE = "saltysalt"
 const CHROME_KEY_LENGTH = 16
 const CRYPT_DIGEST = "sha1"
 
-// console.log(database)
 
 const pbkdf2Promise = (chromePassword: string): Promise<Buffer> => {
     return new Promise((resolve, reject) => {
@@ -107,11 +106,6 @@ const filterValidCookies = (cookies: ChromeCookie[], url: Url): ChromeCookie[] =
     return validCookies;
 }
 
-let int = require('int')
-const convertChromiumTimestampToUnix = (timestamp: number) => {
-    return int(timestamp.toString()).sub('11644473600000000').div(1000000);
-
-}
 const convertRawToSetCookieStrings = (cookies: ChromeCookie[]) => {
     let strings: string = "";
     cookies.forEach(function (cookie, index) {
