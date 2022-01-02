@@ -17,14 +17,14 @@ class AlfredEnv {
      * This is the location of the Alfred.alfred preferences. If a user has synced their settings,
      * this will allow you to find out where their settings are regardless of sync state.
      */
-    public getPreferencePath(): string {
+    public static getPreferencePath(): string {
         return preference!!
     }
 
     /**
      * Current theme used
      */
-    public getTheme(): string {
+    public static getTheme(): string {
         return theme
     }
 
@@ -32,14 +32,14 @@ class AlfredEnv {
      * Find out which version and build the user is currently running.
      * This may be useful if your workflow depends on a particular Alfred version's features.
      */
-    public getVersion(): string {
+    public static getVersion(): string {
         return version
     }
 
     /**
      * The bundle ID of the current running workflow
      */
-    public getBundleId(): string {
+    public static getBundleId(): string {
         return bundleId
     }
 
@@ -48,7 +48,7 @@ class AlfredEnv {
      * Note that these two will only be populated if your workflow has a bundle id set.
      * @see getBundleId()
      */
-    public getCachePath(): string {
+    public static getCachePath(): string {
         return cachePath
     }
 
@@ -57,35 +57,35 @@ class AlfredEnv {
      * Note that these two will only be populated if your workflow has a bundle id set.
      * @see getBundleId()
      */
-    public getDataPath(): string {
+    public static getDataPath(): string {
         return dataPath
     }
 
     /**
      * Name of the currently running workflow
      */
-    public getWorkFlowName(): string {
+    public static getWorkFlowName(): string {
         return workflowName
     }
 
     /**
      * Current workflow version
      */
-    public getWorkFlowVersion(): string {
+    public static getWorkFlowVersion(): string {
         return flowVersion
     }
 
     /**
      * If the user currently has the debug panel open for this workflow.
      */
-    public isDebugMode() {
+    public static isDebugMode() {
         return isDebug
     }
 
     /**
      * Unique ID of the currently running workflow
      */
-    public getUuid(): string {
+    public static getUuid(): string {
         return uuid
     }
 }
