@@ -1,4 +1,5 @@
 import * as LoggerFactory from "log4js";
+import {AlfredEnv} from "./AlfredEnv";
 
 LoggerFactory.configure({
     appenders: {
@@ -11,7 +12,11 @@ LoggerFactory.configure({
     categories: {
         default: {
             appenders: ['alfredworkflw'],
-            level: isDebug ? 'debug' : 'error'
+            level: 'info'
+        },
+        alfred: {
+            appenders: ['alfredworkflw'],
+            level: 'info'
         }
     }
 })
@@ -19,6 +24,6 @@ LoggerFactory.configure({
 
 export class AlfredLogger {
     public static getLogger(): LoggerFactory.Logger {
-        return LoggerFactory.getLogger()
+        return LoggerFactory.getLogger('alfred')
     }
 }

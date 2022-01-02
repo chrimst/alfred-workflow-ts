@@ -12,7 +12,7 @@ const flowVersion = process.env.alfred_workflow_version!!
 /**
  * @see https://www.alfredapp.com/help/workflows/script-environment-variables/
  */
-class AlfredEnv {
+export class AlfredEnv {
     /**
      * This is the location of the Alfred.alfred preferences. If a user has synced their settings,
      * this will allow you to find out where their settings are regardless of sync state.

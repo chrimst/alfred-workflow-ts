@@ -2,7 +2,7 @@ import * as keytar from "keytar"
 import * as crypto from "crypto"
 import * as url from "url";
 import {Url} from "url";
-import {AwfSqlite3} from "../awf_sqlite3";
+import {AwfSqlite3} from "../sqlite3/AwfSqlite3";
 import * as tough from 'tough-cookie'
 
 const PROFILE = "Default"

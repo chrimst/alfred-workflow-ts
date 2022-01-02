@@ -1,4 +1,5 @@
 import {AlfredLogger} from "./AlfredLogger";
+import {AlfredEnv} from "./AlfredEnv";
 
 
 /**
