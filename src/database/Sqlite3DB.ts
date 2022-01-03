@@ -1,6 +1,6 @@
 import {Database} from "sqlite3";
 
-export class AwfSqlite3 {
+export class Sqlite3DB {
 
     private readonly database: Database;
 
@@ -10,7 +10,7 @@ export class AwfSqlite3 {
     }
 
     public static initAwfDB(dbPath: string) {
-        return new AwfSqlite3(new Database(dbPath));
+        return new Sqlite3DB(new Database(dbPath));
     }
 
     public query(sql: string): Promise<[]> {

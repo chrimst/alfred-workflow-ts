@@ -2,7 +2,7 @@ import * as keytar from "keytar"
 import * as crypto from "crypto"
 import * as url from "url";
 import {Url} from "url";
-import {AwfSqlite3} from "../sqlite3/AwfSqlite3";
+import {Sqlite3DB} from "../database/Sqlite3DB";
 import * as tough from 'tough-cookie'
 
 const PROFILE = "Default"
@@ -120,7 +120,7 @@ export class ChromeCookieManager {
 
     public static getCookie(accessUrl: string): Promise<ChromeCookie[]> {
         const newUrl = validUrl(accessUrl)
-        const awfSqlite3 = AwfSqlite3.initAwfDB(MAC_CHROME_COOKIE_PATH);
+        const awfSqlite3 = Sqlite3DB.initAwfDB(MAC_CHROME_COOKIE_PATH);
         const cookieSql = buildCookieQuerySql(tld.getDomain(newUrl.host));
 
         const allQueriedCookies = awfSqlite3.query(cookieSql);

@@ -39,32 +39,75 @@ function alfredCache(keyGenerator?: (...args: any) => string, maxAge: number = 6
                 fs.mkdirSync(cachePath, {recursive: true});
             }
 
-            const cacheFile = cachePath + cacheKey
-
-            fs.exists(cacheFile, (exists) => {
-                if (!exists) {
-                    logger.log('{} does not exist,{}', cacheFile);
-                    const result = originalFun.apply(originalFun, arguments);
-                    fs.writeFileSync(cacheFile, JSON.stringify(result), {encoding: 'utf8', flag: 'w'})
-                    return result;
-                }
-
-                fs.stat(cacheFile, (err, stat) => {
-                    const delta = Date.now() - stat.mtimeMs;
-
-                    if (delta > maxAge * 1000) {
-                        logger.info("has been expired {}", cacheFile)
-                        const result = originalFun.apply(originalFun, arguments);
-                        fs.writeFileSync(cacheFile, JSON.stringify(result), {encoding: 'utf8', flag: 'w'})
-                        return result;
-                    }
-
-
-                    const result = fs.readFileSync(cacheFile, {encoding: "utf-8", flag: 'r'});
-                    return JSON.parse(result)
-                })
-            })
+            AlfredCache.isCacheExists(cacheKey)
+                .then(exists => AlfredCache.cacheIfNotExist(cacheKey, originalFun.apply(originalFun, arguments), exists))
+                .then(() => AlfredCache.isExpired(cacheKey, maxAge))
+                .then(exists => AlfredCache.cacheIfNotExpired(cacheKey, originalFun.apply(originalFun, arguments), exists))
+                .then(() => AlfredCache.getCache(cacheKey))
+                .then((cacheData) => JSON.parse(cacheData))
         }
         return propDesc
+    }
+}
+
+export class AlfredCache {
+
+    public static cache(fileName: string, content: string) {
+        let cachePath = AlfredEnv.getCachePath();
+        if (!fs.existsSync(cachePath)) {
+            logger.info("the first time to cache")
+            fs.mkdirSync(cachePath, {recursive: true});
+        }
+
+        const cacheFile = AlfredCache.getCacheFilePath(fileName);
+        fs.writeFileSync(cacheFile, content, {encoding: 'utf8', flag: 'w'})
+    }
+
+    public static cacheIfNotExist(fileName: string, content: string, isExist: boolean) {
+        if (!isExist) {
+            this.cache(fileName, content)
+        }
+    }
+
+    public static cacheIfNotExpired(fileName: string, content: string, isExist: boolean) {
+        if (!isExist) {
+            this.cache(fileName, content)
+        }
+    }
+
+    public static getCache(fileName: string): string {
+        const cacheFile = AlfredCache.getCacheFilePath(fileName);
+        return fs.readFileSync(cacheFile, {encoding: "utf-8", flag: 'r'});
+    }
+
+    public static isExpired(fileName: string, maxAge: number): Promise<boolean> {
+        const cacheFile = AlfredCache.getCacheFilePath(fileName);
+        return new Promise((resolve, reject) => {
+            fs.stat(cacheFile, (err, stat) => {
+                if (err) {
+                    return reject(err);
+                }
+                const delta = Date.now() - stat.mtimeMs;
+                return resolve(delta > maxAge * 1000)
+            })
+        })
+    }
+
+    public static isCacheExists(fileName: string): Promise<boolean> {
+        const cacheFile = AlfredCache.getCacheFilePath(fileName);
+        return new Promise((a, b) => {
+            fs.exists(cacheFile, (exists) => {
+                a(exists)
+            })
+        })
+    }
+
+    private static getCacheFilePath(fileName: string) {
+        let cachePath = AlfredEnv.getCachePath();
+        if (!cachePath) {
+            cachePath = `${process.env.HOME}/.alfredts/cache/`
+            logger.info("alfred cache path is not define so use the default one {}", cachePath)
+        }
+        return cachePath + fileName;
     }
 }
