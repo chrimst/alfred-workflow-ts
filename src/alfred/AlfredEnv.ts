@@ -49,7 +49,8 @@ export class AlfredEnv {
      * @see getBundleId()
      */
     public static getCachePath(): string {
-        return cachePath
+        if (cachePath) return cachePath
+        return '/Users/christfm/.alfredts/'
     }
 
     /**

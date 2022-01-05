@@ -76,7 +76,7 @@ const resolveRawCookie = (rawRecords: RawCookieRecord, decryptKey: Buffer): Chro
     return rawRecords
 }
 
-const validUrl = (urlStr: string): Url => {
+export const validUrl = (urlStr: string): Url => {
     const newUrl = url.parse(urlStr, false, false);
     if (!newUrl.protocol || !newUrl.hostname) {
         throw new Error('Could not parse URI, format should be http://www.example.com/path/')
@@ -118,8 +118,8 @@ const tld = require('tldjs')
 
 export class ChromeCookieManager {
 
-    public static getCookie(accessUrl: string): Promise<ChromeCookie[]> {
-        const newUrl = validUrl(accessUrl)
+    public static getCookie(accessUrl: Url): Promise<ChromeCookie[]> {
+        const newUrl = accessUrl
         const awfSqlite3 = Sqlite3DB.initAwfDB(MAC_CHROME_COOKIE_PATH);
         const cookieSql = buildCookieQuerySql(tld.getDomain(newUrl.host));
 

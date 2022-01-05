@@ -4,7 +4,7 @@ import {AlfredEnv} from "./AlfredEnv";
 
 const logger = AlfredLogger.getLogger();
 
-function alfredCache(keyGenerator?: (...args: any) => string, maxAge: number = 60) {
+export function alfredCache(keyGenerator?: (...args: any) => string, maxAge: number = 60) {
     return (target: any, key: string, propDesc: PropertyDescriptor) => {
         if (!keyGenerator) {
             logger.info("no logger defined {}", propDesc)
@@ -27,6 +27,7 @@ function alfredCache(keyGenerator?: (...args: any) => string, maxAge: number = 6
             }
 
             const cacheKey = keyGenerator.apply(keyGenerator, args);
+            logger.info("cacheKey is", cacheKey)
             let cachePath = AlfredEnv.getCachePath();
             if (!cachePath) {
                 cachePath = `${process.env.HOME}/.alfredts/cache/`
@@ -52,7 +53,7 @@ function alfredCache(keyGenerator?: (...args: any) => string, maxAge: number = 6
 
 export class AlfredCache {
 
-    public static cache(fileName: string, content: string) {
+    public static cache(fileName: string, content: Promise<string>) {
         let cachePath = AlfredEnv.getCachePath();
         if (!fs.existsSync(cachePath)) {
             logger.info("the first time to cache")
@@ -60,16 +61,18 @@ export class AlfredCache {
         }
 
         const cacheFile = AlfredCache.getCacheFilePath(fileName);
-        fs.writeFileSync(cacheFile, content, {encoding: 'utf8', flag: 'w'})
+        console.log(fileName + "......" + content)
+        content.then((c) => fs.writeFileSync(cacheFile, c, {encoding: 'utf8', flag: 'w'}))
+
     }
 
-    public static cacheIfNotExist(fileName: string, content: string, isExist: boolean) {
+    public static cacheIfNotExist(fileName: string, content: Promise<string>, isExist: boolean) {
         if (!isExist) {
             this.cache(fileName, content)
         }
     }
 
-    public static cacheIfNotExpired(fileName: string, content: string, isExist: boolean) {
+    public static cacheIfNotExpired(fileName: string, content: Promise<string>, isExist: boolean) {
         if (!isExist) {
             this.cache(fileName, content)
         }
