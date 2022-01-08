@@ -4,7 +4,7 @@ import {AlfredEnv} from "./AlfredEnv";
 
 const logger = AlfredLogger.getLogger();
 
-export function alfredCache(keyGenerator?: (...args: any) => string, maxAge: number = 60) {
+export function AsyncAlfredCache(keyGenerator?: (...args: any) => string, maxAge: number = 60) {
     return (target: any, key: string, propDesc: PropertyDescriptor) => {
         if (!keyGenerator) {
             logger.info("no logger defined {}", propDesc)

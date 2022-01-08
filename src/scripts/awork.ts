@@ -1,6 +1,6 @@
 import {ChromeCookieManager, validUrl} from "../chrome/ChromeCookie";
 import {Url} from "url";
-import {alfredCache} from "../alfred/AlfredCache";
+import {AsyncAlfredCache} from "../alfred/AlfredCache";
 import {AlfredLogger} from "../alfred/AlfredLogger";
 
 const url = validUrl('');
@@ -8,7 +8,7 @@ const url = validUrl('');
 
 class Awork {
 
-    @alfredCache((url: Url) => {
+    @AsyncAlfredCache((url: Url) => {
         const v = url.hostname!!
         console.log(v);
         return "testUrl"
