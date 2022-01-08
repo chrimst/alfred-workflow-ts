@@ -69,6 +69,11 @@ export class AlfredCache {
 
     }
 
+    public static expire(fileName:string) {
+        const cacheFile = AlfredCache.getCacheFilePath(fileName);
+        fs.rmSync(cacheFile)
+    }
+
     public static async cacheIfNotExist(fileName: string, content: Promise<string>, isExist: boolean) {
         if (!isExist) {
             await this.cache(fileName, content)

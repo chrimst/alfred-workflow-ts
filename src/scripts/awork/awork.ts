@@ -1,22 +1,22 @@
 import {ChromeCookieManager, validUrl} from "../../chrome/ChromeCookie";
-import {AsyncAlfredCache} from "../../alfred/AlfredCache";
+import {AlfredCache, AsyncAlfredCache} from "../../alfred/AlfredCache";
 import axios from "axios";
 import {AlfredWorkFlow} from "../../alfred/Alfred";
 import {AlfredItem, Icon} from "../../alfred/AlfredItem";
 import {AlfredLogger} from "../../alfred/AlfredLogger";
 import {AWorkResult} from "./type";
 
+const A_WORK_URL = ''
+
+const A_WORK_CACHE_KEY = ""
+
+const defaultIcon: Icon = {path: `${process.env.PWD}/awork.png`}
+
+const log = AlfredLogger.getLogger()
+
 class AWork {
 
-    public static A_WORK_URL = ''
-
-    public static A_WORK_CACHE_KEY = "work_alibaba_inc_com_xs"
-
-    public static defaultIcon: Icon = {path: `${process.env.PWD}/awork.png`}
-
-    public static log = AlfredLogger.getLogger()
-
-    @AsyncAlfredCache(() => AWork.A_WORK_CACHE_KEY)
+    @AsyncAlfredCache(() => A_WORK_CACHE_KEY)
     public static async getCookie(url: string) {
         const aWorkUrl = validUrl(url);
         const cookies = await ChromeCookieManager.getCookie(aWorkUrl)
@@ -34,7 +34,6 @@ class AWork {
                 historyNumbers: 10
             }
         }).then(res => {
-            console.log(JSON.stringify(res.data))
             return res.data
         })
     }
@@ -46,7 +45,8 @@ class AWork {
             for (let person of persons) {
                 const title = `${person.chineseNickname}(${person.lastName})${person.emplId}`;
                 const item = new AlfredItem(title, person.deptDesc);
-                item.icon = AWork.defaultIcon
+                item.icon = defaultIcon
+                item.autocomplete = person.chineseNickname
                 alfredItems.push(item)
             }
         }
@@ -55,30 +55,43 @@ class AWork {
             for (let link of links) {
                 const title = `${link.body}`;
                 const item = new AlfredItem(title, link.description);
-                item.icon = AWork.defaultIcon
+                item.icon = defaultIcon
+                item.arg = link.url
+                item.autocomplete = link.body
+                alfredItems.push(item)
+            }
+        }
+        const errors = result?.errors
+        if (errors) {
+            for (let e of errors) {
+                const item = new AlfredItem(e.code, e.msg);
+                item.icon = defaultIcon
                 alfredItems.push(item)
             }
         }
         return alfredItems
     }
-}
 
-const aWorkScript = async () => {
-    const cookie = await AWork.getCookie(AWork.A_WORK_URL);
-    let queryResult = await AWork.query(AWork.A_WORK_URL, cookie, process.argv[2]);
+    public static async main(keyWord: string) {
 
-    //
-    if (queryResult.hasError) {
-        // todo: redirect to get
-        // since: cookie is expired
+        // get cookie from url
+        let cookie = await AWork.getCookie(A_WORK_URL);
+        let queryResult = await AWork.query(A_WORK_URL, cookie, keyWord);
+
+        // if failed rm cache and get cookie again
+        if (queryResult.hasError) {
+            log.info("Invalid query result got")
+            AlfredCache.expire(A_WORK_CACHE_KEY)
+            cookie = await AWork.getCookie(A_WORK_URL);
+            queryResult = await AWork.query(A_WORK_URL, cookie, keyWord)
+        }
+
+        const alfredItems = AWork.parseResults(queryResult);
+
+        const workFlow = new AlfredWorkFlow();
+        workFlow.addItems(alfredItems)
+        workFlow.sendFeedback()
     }
-    const alfredItems = AWork.parseResults(queryResult);
-    console.log("results is", JSON.stringify(queryResult))
-
-    const workFlow = new AlfredWorkFlow();
-    workFlow.addItems(alfredItems)
-
-    workFlow.sendFeedback()
 }
 
-aWorkScript()
+AWork.main(process.argv[2]).catch()
