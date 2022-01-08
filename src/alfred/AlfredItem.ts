@@ -4,7 +4,7 @@ type Icon = { type?: "fileicon" | "filetype" | undefined; path: string }
 /**
  * @see https://www.alfredapp.com/help/workflows/inputs/script-filter/json/
  */
-class AlfredItem {
+export class AlfredItem {
     /**
      * unique identifier for the item
      * help to subsequent sorting and ordering
