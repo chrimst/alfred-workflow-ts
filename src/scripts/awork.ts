@@ -15,7 +15,13 @@ class Awork {
     })
     public getCookie(url: Url) {
         return ChromeCookieManager.getCookie(url)
+            .then(ChromeCookieManager.formatCookie)
     }
 }
+
 AlfredLogger.getLogger().info("cccc")
-console.log(new Awork().getCookie(url))
+const printCookie = async () => {
+    const v = await new Awork().getCookie(url)
+    console.log(v)
+}
+printCookie()

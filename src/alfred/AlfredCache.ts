@@ -20,7 +20,7 @@ export function alfredCache(keyGenerator?: (...args: any) => string, maxAge: num
             return
         }
         const originalFun: Function = decoratedObj
-        propDesc.value = function (): any {
+        propDesc.value = async function (): Promise<any> {
             let args = []
             for (let arg of arguments) {
                 args.push(arg)
@@ -40,12 +40,16 @@ export function alfredCache(keyGenerator?: (...args: any) => string, maxAge: num
                 fs.mkdirSync(cachePath, {recursive: true});
             }
 
-            AlfredCache.isCacheExists(cacheKey)
-                .then(exists => AlfredCache.cacheIfNotExist(cacheKey, originalFun.apply(originalFun, arguments), exists))
-                .then(() => AlfredCache.isExpired(cacheKey, maxAge))
-                .then(exists => AlfredCache.cacheIfNotExpired(cacheKey, originalFun.apply(originalFun, arguments), exists))
-                .then(() => AlfredCache.getCache(cacheKey))
-                .then((cacheData) => JSON.parse(cacheData))
+            const isCacheExists = await AlfredCache.isCacheExists(cacheKey);
+            await AlfredCache.cacheIfNotExist(cacheKey, originalFun.apply(originalFun, arguments), isCacheExists)
+            const isExpired = await AlfredCache.isExpired(cacheKey, maxAge)
+            await AlfredCache.cacheIfNotExpired(cacheKey, originalFun.apply(originalFun, arguments), isExpired)
+
+
+            const aa = async () => AlfredCache.getCache(cacheKey);
+
+            return aa()
+
         }
         return propDesc
     }
@@ -53,7 +57,7 @@ export function alfredCache(keyGenerator?: (...args: any) => string, maxAge: num
 
 export class AlfredCache {
 
-    public static cache(fileName: string, content: Promise<string>) {
+    public static async cache(fileName: string, content: Promise<string>) {
         let cachePath = AlfredEnv.getCachePath();
         if (!fs.existsSync(cachePath)) {
             logger.info("the first time to cache")
@@ -61,20 +65,19 @@ export class AlfredCache {
         }
 
         const cacheFile = AlfredCache.getCacheFilePath(fileName);
-        console.log(fileName + "......" + content)
-        content.then((c) => fs.writeFileSync(cacheFile, c, {encoding: 'utf8', flag: 'w'}))
+        fs.writeFileSync(cacheFile, await content, {encoding: 'utf8', flag: 'w'})
 
     }
 
-    public static cacheIfNotExist(fileName: string, content: Promise<string>, isExist: boolean) {
+    public static async cacheIfNotExist(fileName: string, content: Promise<string>, isExist: boolean) {
         if (!isExist) {
-            this.cache(fileName, content)
+            await this.cache(fileName, content)
         }
     }
 
-    public static cacheIfNotExpired(fileName: string, content: Promise<string>, isExist: boolean) {
+    public static async cacheIfNotExpired(fileName: string, content: Promise<string>, isExist: boolean) {
         if (!isExist) {
-            this.cache(fileName, content)
+            await this.cache(fileName, content)
         }
     }
 
