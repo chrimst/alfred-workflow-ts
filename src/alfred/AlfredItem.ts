@@ -1,5 +1,5 @@
-type Action = string | string[] | { text?: string | string[], url?: string, file?: string, auto?: string }
-type Icon = { type?: "fileicon" | "filetype" | undefined; path: string }
+export type Action = string | string[] | { text?: string | string[], url?: string, file?: string, auto?: string }
+export type Icon = { type?: "fileicon" | "filetype" | undefined; path: string }
 
 /**
  * @see https://www.alfredapp.com/help/workflows/inputs/script-filter/json/
@@ -121,7 +121,7 @@ export class AlfredItem {
                 uid?: string,
                 type?: "default" | "file" | "file:skipcheck",
                 icon?: Icon,
-                valid?: boolean,
+                valid: boolean = true,
                 match?: string,
                 mods?: {},
                 arg?: string,

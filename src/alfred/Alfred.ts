@@ -9,7 +9,7 @@ export class AlfredWorkFlow {
 
     private readonly alfredEnv: AlfredEnv
 
-    private resultItems: AlfredItem[] = []
+    private items: AlfredItem[] = []
 
     constructor() {
         this.alfredEnv = new AlfredEnv()
@@ -31,10 +31,12 @@ export class AlfredWorkFlow {
     }
 
     public clearItems(): void {
-        this.resultItems = []
+        this.items = []
     }
 
-    public addItems(item: AlfredItem): void {
-        this.resultItems.push(item)
+    public addItems(item: AlfredItem[]): void {
+        for (let it of item) {
+            this.items.push(it)
+        }
     }
 }
